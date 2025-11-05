@@ -17,8 +17,10 @@ A modular Windows system diagnostic tool written in Python. This utility collect
 - Python 3.9 or later
 - Psutil (Install)
 
-** Run in Terminal **
+**Run the script:**
+```bash
 python System-Diagnostic-Utility.py
+```
 
 ## What I Learned
 
