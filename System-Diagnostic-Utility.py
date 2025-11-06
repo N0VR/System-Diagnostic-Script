@@ -213,10 +213,6 @@ class Menu:
             pass
         elif self.choice in ("no", "n"):
             self.Flag = False
-            
-
-            
-
                 
     def Menu_Check(self):
         if self.userConvert == 1:
@@ -229,7 +225,6 @@ class Menu:
             print()
 
             
-
 #Run Script
 Main = Menu()
 #Main.run()
