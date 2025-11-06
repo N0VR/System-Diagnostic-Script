@@ -88,6 +88,9 @@ class Services:
             print(f"{svc['Name']} - {svc['Status']}")
             time.sleep(0.2)
 
+        self.services.clear()
+            
+
         
 
     def check_all_services(self):
@@ -169,14 +172,70 @@ class SystemMonitor:
         print()
         time.sleep(0.5)
 
-       
+class Menu:
+    Flag = True
+
+    def __init__(self):
+        self.SystemMonitor = SystemMonitor()
+        self.Svc = Services()
+
+    def displayMenu(self):
+        while self.Flag:
+            print("--- System Diagnostic Utility 1.0 ---")
+            time.sleep(0.2)
+            print()
+            print("1) Real Time Monitor")
+            print("2) Display Services")
+            print()
+            time.sleep(0.2)
+
+            try:
+                self.userSelect = input("Select One or Two: ")
+                self.userConvert = int(self.userSelect)
+                time.sleep(0.2)
+                print()
+                
+            except ValueError:
+                print()
+                print("Please Select a Number.")
+                continue
+
+            self.Menu_Check()
+
+            self.UserMenu = input("Go back to Menu (Y/N)?: ")
+            self.choice = self.UserMenu.lower()
+
+            self.Menu_Return()
 
 
+    def Menu_Return(self):
+        if self.choice in ("yes", "y"):
+            pass
+        elif self.choice in ("no", "n"):
+            self.Flag = False
+            
+
+            
+
+                
+    def Menu_Check(self):
+        if self.userConvert == 1:
+            pass
+            print()
+        elif self.userConvert == 2:
+            self.Svc.fetch_service()
+            self.Svc.parse_service()
+            self.Svc.displayService()
+            print()
+
+            
 
 #Run Script
-Main = SystemMonitor()
+Main = Menu()
 #Main.run()
-Main.TestRun()
+Main.displayMenu()
+print()
+print("Script Finished")
 
 
 
