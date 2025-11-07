@@ -69,7 +69,7 @@ class Services:
             pass
 
     #Loads Fetch data as JSON then changes Status from Number Values to string Values "Stopped"
-    def parse_service(self):
+    def load_service(self):
 
         #Used to make the status user friendly
         status_Map = {1: "Stopped", 2: "StartPending", 3: "StopPending", 4: "Running", 5: "ContinuePending", 6: "PausePending", 7: "Paused"}
@@ -145,7 +145,6 @@ class SystemMonitor:
                 print(f"{d['name']} | Total: {round(d['total_gb'])} GB | Used: {round(d['used_gb'])} GB | Free: {round(d['free_gb'])} GB")
 
 
-
             time.sleep(self.refresh_interval)
 
     #Starts Methods and Processes for SysMonitor Class
@@ -169,6 +168,7 @@ class SystemMonitor:
 
         except KeyboardInterrupt:
             self.running = False
+            self.drive.DriveData.clear()
             print()
             time.sleep(0.2)
             print("Monitoring Stopped by User.")
@@ -178,13 +178,37 @@ class SystemMonitor:
 
     #Created Method to Test Parts of code
     def TestRun(self):
-        self.service = Services()
+        self.NetD = Net_Diagnostic()
+        self.NetD.fetch_Connection()
 
-        self.service.fetch_service()
-        self.service.parse_service()
-        self.service.displayService()
-        print()
+        print(json.loads(self.NetD.pingRaw))
+
+
         time.sleep(0.5)
+
+
+class Net_Diagnostic:
+    def __init__(self):
+        pass
+
+    def fetch_Connection(self):
+        self.ping = subprocess.run(["powershell", "-Command", "test-connection", "8.8.8.8", "-count", "3", "|", "ConvertTo-Json"], capture_output=True, text=True)
+        self.pingRaw = self.ping.stdout
+
+    def pingConvert(self):
+        ping_data = json.loads(self.pingRaw)
+        result = ping_data[0]
+        
+        print("--- Network Test --- ")
+        if result['StatusCode'] == 0:
+            print(f"Target: {result['Address']}")
+            print(f"Status: ONLINE")
+            print(f"Latency: {result['ResponseTime']}ms")
+
+        else:
+            print(f"Target: {result['Address']}")
+            print(f"Status: OFFLINE")
+            print("Check your network connection.")
 
 
 #Created Main Menu Class
@@ -195,6 +219,7 @@ class Menu:
     def __init__(self):
         self.SystemMonitor = SystemMonitor()
         self.Svc = Services()
+        self.NetDiag = Net_Diagnostic()
 
     #Visual Display of Menu
     def displayMenu(self):
@@ -206,6 +231,7 @@ class Menu:
             print()
             print("1) Real Time Monitor")
             print("2) Display Services")
+            print("3) Ping")
             print()
             time.sleep(0.2)
 
@@ -238,18 +264,31 @@ class Menu:
     #Stores a Check and runs Class Methods depending on user selection            
     def Menu_Check(self):
         if self.userConvert == 1:
-            pass
+            self.SystemMonitor.running = True
+            self.SystemMonitor.run()
             print()
+
         elif self.userConvert == 2:
             self.Svc.fetch_service()
-            self.Svc.parse_service()
+            self.Svc.load_service()
             self.Svc.displayService()
             print()
+
+        elif self.userConvert == 3:
+            self.NetDiag.fetch_Connection()
+            self.NetDiag.pingConvert()
+            print()
+
+        else:
+            print("Select One or Two")
+            print()
+            time.sleep(0.2)
+            print()
+            pass
 
           
 #Run Script
 Main = Menu()
-#Main.run()
 Main.displayMenu()
 print()
 print("Script Finished")
