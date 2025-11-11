@@ -1,0 +1,18 @@
+{
+  "critical_core": {
+    "include": ["RpcSs", "DcomLaunch", "PlugPlay", "EventLog", "Winmgmt", "LanmanWorkstation", "LanmanServer"],
+    "expected": "Running"
+  },
+  "network_stack": {
+    "include": ["Dhcp", "Dnscache", "NlaSvc", "BFE", "MpsSvc", "WlanSvc"],
+    "expected": "Running"
+  },
+  "remote_access": {
+    "include": ["TermService", "RemoteRegistry"],
+    "expected": "Running_if_used"
+  },
+  "dev_tools": {
+    "include": ["OpenSSH*", "ssh-agent", "com.docker.service"],
+    "expected": "Optional"
+  }
+}

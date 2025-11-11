@@ -1,6 +1,8 @@
 import subprocess
 import json
 import time
+from pathlib import Path
+from tabulate import tabulate
 
 
 
@@ -8,11 +10,15 @@ import time
 class Services:
     def __init__(self):
         self.services = []
+        p = Path("config/service_categories.json")
+
+        with open(p, "r") as f:
+            self.categories = json.load(f)
 
     #Runs the Command to get Services for the parse method below
     def fetch_service(self):
         try:
-            self.fetch = subprocess.run(["powershell", "-Command", "Get-Service", "-Name", "win*", "|", "Select-Object", "Name," "DisplayName,", "Status", "|", "ConvertTo-Json"], capture_output=True, text=True)
+            self.fetch = subprocess.run(["powershell", "-Command", "Get-CimInstance Win32_Service | Select Name, DisplayName, State, StartMode | ConvertTo-Json -Depth 3"], capture_output=True, text=True)
             if self.fetch.returncode == 0:
                 self.raw_text = self.fetch.stdout
             else:
@@ -24,34 +30,77 @@ class Services:
     #Loads Fetch data as JSON then changes Status from Number Values to string Values "Stopped"
     def load_service(self):
 
-        #Used to make the status user friendly
-        status_Map = {1: "Stopped", 2: "StartPending", 3: "StopPending", 4: "Running", 5: "ContinuePending", 6: "PausePending", 7: "Paused"}
-
         #Creates a list of Dicts
         services_data = json.loads(self.raw_text)
+        net_stack = self.categories["network_stack"]["include"]
+        crit_core = self.categories["critical_core"]["include"]
+        rm_access = self.categories["remote_access"]["include"]
+        self.check = True
 
-        for svc in services_data:
-            name = svc["Name"]
-            displayname = svc["DisplayName"]
-            status = svc["Status"]
+        while self.check:
+            self.choice = input("Select a category: ")
 
-            if status in status_Map:
-                svc["Status"] = status_Map[status]
-            else:
-                svc["Status"] = "Unknown"
+            try:
+                if self.choice == "1":
+                    for n in services_data:
+                        for name in crit_core:
+                            if n["Name"] == name:
+                                self.services.append(n)
+                                self.check = False
 
-            self.services.append(svc)
+                elif self.choice == "2":
+                    for n in services_data:
+                        for name in net_stack:
+                            if n["Name"] == name:
+                                self.services.append(n)
+                                self.check = False
+
+                elif self.choice == "3":
+                    for n in services_data:
+                        for name in rm_access:
+                            if n["Name"] == name:
+                                self.services.append(n)
+                                self.check = False
+
+                else:
+                    print()
+                    print("Please try again")
+                    print()
+                    time.sleep(0.2)
+                    continue
+                    
+            except TypeError:
+                print()
+                print("An error happened")
+                print()
+                time.sleep(0.2)
+                continue
+
+
+
+        
+
+
+
 
     #Displays Services using a for loop
     def displayService(self):
-        print("--- Services ---")
+        print()
+        print("1) Critical Core")
+        print("2) Network Stack")
+        print("3) Remote Access")
+        print()
+        time.sleep(0.2)
+        self.load_service()
+        print()
 
-        for svc in self.services:
-            print(f"{svc['DisplayName']} - {svc['Status']}")
-            time.sleep(0.2)
+        print("--- Services ---")
+        print()
+        print(tabulate(self.services, headers="keys"))
 
         #Prevents the list from being cluttered during loop back of the Menu
         self.services.clear()
+        print()
             
 
     
@@ -59,8 +108,7 @@ class Services:
         pass
 
 
-#Main = Services()
+Main = Services()
 
-#Main.fetch_service()
-#Main.load_service()
-#Main.displayService()
+Main.fetch_service()
+Main.displayService()
