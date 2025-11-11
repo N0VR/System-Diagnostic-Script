@@ -71,7 +71,6 @@ class Menu:
 
         elif self.userConvert == 2:
             self.Svc.fetch_service()
-            self.Svc.load_service()
             self.Svc.displayService()
             print()
 

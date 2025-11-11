@@ -10,7 +10,9 @@ from tabulate import tabulate
 class Services:
     def __init__(self):
         self.services = []
-        p = Path("config/service_categories.json")
+        
+        base = Path(__file__).parent
+        p = base / "config" / "service_categories.json"
 
         with open(p, "r") as f:
             self.categories = json.load(f)
@@ -76,13 +78,6 @@ class Services:
                 time.sleep(0.2)
                 continue
 
-
-
-        
-
-
-
-
     #Displays Services using a for loop
     def displayService(self):
         print()
@@ -108,7 +103,7 @@ class Services:
         pass
 
 
-Main = Services()
+#Main = Services()
 
-Main.fetch_service()
-Main.displayService()
+#Main.fetch_service()
+#Main.displayService()
