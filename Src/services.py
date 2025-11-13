@@ -80,7 +80,9 @@ class Services:
 
     #Displays Services using a for loop
     def displayService(self):
+        print("----- Service Menu -----")
         print()
+        time.sleep(0.2)
         print("1) Critical Core")
         print("2) Network Stack")
         print("3) Remote Access")
@@ -89,7 +91,7 @@ class Services:
         self.load_service()
         print()
 
-        print("--- Services ---")
+        print("----- Services -----")
         print()
         print(tabulate(self.services, headers="keys"))
 

@@ -8,8 +8,6 @@ import threading
 
 
 
-
-
 #Creating SystemMonitor Class / Main
 class SystemMonitor:
     #Created Class Attribute for global control on time.sleep
