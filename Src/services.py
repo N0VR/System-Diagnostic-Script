@@ -32,7 +32,7 @@ class Services:
     #Loads Fetch data as JSON then changes Status from Number Values to string Values "Stopped"
     def load_service(self):
 
-        #Creates a list of Dicts
+        #Creates a list of service Dicts
         services_data = json.loads(self.raw_text)
         net_stack = self.categories["network_stack"]["include"]
         crit_core = self.categories["critical_core"]["include"]
@@ -41,22 +41,25 @@ class Services:
 
         while self.check:
             self.choice = input("Select a category: ")
-
+             
             try:
+                #Shows Critical Core Services
                 if self.choice == "1":
                     for n in services_data:
                         for name in crit_core:
                             if n["Name"] == name:
                                 self.services.append(n)
                                 self.check = False
-
+                
+                #Shows Networking Services
                 elif self.choice == "2":
                     for n in services_data:
                         for name in net_stack:
                             if n["Name"] == name:
                                 self.services.append(n)
                                 self.check = False
-
+                
+                #Shows Remote Access Services
                 elif self.choice == "3":
                     for n in services_data:
                         for name in rm_access:

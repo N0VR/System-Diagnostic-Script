@@ -8,7 +8,7 @@ class tempCleaner:
     def __init__(self):
         self.tpath = tempfile.gettempdir() #Gets TEMP Env and has its Path
         
-
+    #Dry Run prompt
     def dry_run_check(self):
         self.dry_run = True
         dry_flag = True #While loop Flag (dry_run)
@@ -32,6 +32,8 @@ class tempCleaner:
                 time.sleep(0.1)
             
     def user_choice(self):
+
+        #Set attributes before executing logic and use counters in summary section after
         other_flag = True
         self.deleted = 0
         self.skipped = 0
@@ -39,18 +41,21 @@ class tempCleaner:
         self.folders = 0
         temp_dir = Path(self.tpath).resolve()
 
+        #While loop is controlled to be turned off after logic
         while other_flag:
             choice = input("Do you want to clean these Temp files (Y/N)?: ")
             time.sleep(0.1)
             print()
 
             try:
+                #Begin Input Checks
                 if choice.lower() in ("y", "yes"):
-                    self.dry_run_check() #Dry run prompt
+                    self.dry_run_check() #Dry Run Check
 
                     for d in os.listdir(temp_dir):
                         full_path = (Path(self.tpath) / d).resolve()
 
+                        #Skips weird Paths
                         if temp_dir not in full_path.parents:
                             if not self.dry_run:
                                 print(f"> Skipped suspicious path: {full_path}")
@@ -63,6 +68,7 @@ class tempCleaner:
                             continue
 
                         try:
+                            #Checks the path entry before doing something
                             if full_path.is_dir():
                                 if not self.dry_run:
                                     shutil.rmtree(full_path)
@@ -74,6 +80,7 @@ class tempCleaner:
                                 self.deleted += 1
                                 self.folders += 1
                             
+                            #Checks the path entry before doing something
                             elif full_path.is_file():
                                 if not self.dry_run:
                                     full_path.unlink()
@@ -88,6 +95,7 @@ class tempCleaner:
                             else:
                                 print("> An issue accessing TEMP Dir")
 
+                        #A few except blocks to handle different errors
                         except PermissionError:
                             print(f"> Skipped: {d}")
                             print()
@@ -120,7 +128,10 @@ class tempCleaner:
             except Exception as e:
                 print(f"An error happened: {e}")
 
+    #Uses the Counters to create a summary
     def Cleaner_Summarise(self):
+
+        #Summary after actual deletion attempt
         if not self.dry_run:
             print(f"> Deleted Directories: {self.folders}")
             time.sleep(0.1)
@@ -130,6 +141,8 @@ class tempCleaner:
             print(f"> Skipped entries: {self.skipped}")
             time.sleep(0.1)
             print(f"> {self.deleted} Entries have been deleted")
+
+        #Summary after Dry Run attempt
         else:
             print(f"> {self.folders} Directories would have been deleted")
             time.sleep(0.1)
@@ -140,7 +153,7 @@ class tempCleaner:
             time.sleep(0.1)
             print(f"> {self.deleted} Entries would have been deleted")
                     
-
+    #Displays TempCleaner Module
     def display(self):
         print()
         print("----- Current Temp Files -----")
