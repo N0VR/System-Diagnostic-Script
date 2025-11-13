@@ -35,6 +35,7 @@ class tempCleaner:
 
         #Set attributes before executing logic and use counters in summary section after
         other_flag = True
+        self.ran_cleaner = True
         self.deleted = 0
         self.skipped = 0
         self.files = 0
@@ -51,6 +52,7 @@ class tempCleaner:
                 #Begin Input Checks
                 if choice.lower() in ("y", "yes"):
                     self.dry_run_check() #Dry Run Check
+                    self.ran_cleaner = True
 
                     for d in os.listdir(temp_dir):
                         full_path = (Path(self.tpath) / d).resolve()
@@ -115,7 +117,7 @@ class tempCleaner:
                             self.skipped += 1
 
                 elif choice.lower() in ("n", "no"):
-                    pass
+                    self.ran_cleaner = False
 
                 else:
                     print("Select Y or N")
@@ -154,7 +156,8 @@ class tempCleaner:
             print(f"> {self.deleted} Entries would have been deleted")
                     
     #Displays TempCleaner Module
-    def display(self):
+    def display(self): 
+
         print()
         print("----- Current Temp Files -----")
         print()
@@ -165,11 +168,17 @@ class tempCleaner:
         self.user_choice()
         print()
         time.sleep(0.1)
-        print("----- Cleaner Summary -----")
-        print()
+        
+        #Check to see if Cleaner logic was ran
+        if not self.ran_cleaner:
+            pass
+        else:
+            print("----- Cleaner Summary -----")
+            print()
+            self.Cleaner_Summarise()
+
         time.sleep(0.1)
-        self.Cleaner_Summarise()
-        print()
+        
 
 
 
